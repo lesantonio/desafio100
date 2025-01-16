@@ -6,11 +6,12 @@ body {
 
 h1 {
     font-size: 2em;
+    margin-bottom: 10px;
 }
 
 .deposits-container {
     display: grid;
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(10, 1fr);  /* 10 colunas em telas maiores */
     gap: 10px;
     margin-top: 20px;
 }
@@ -32,4 +33,29 @@ h1 {
 .deposit.clicked {
     background-color: #4CAF50;
     color: white;
+}
+
+/* Responsividade para telas menores (smartphones) */
+@media (max-width: 768px) {
+    .deposits-container {
+        grid-template-columns: repeat(5, 1fr); /* 5 colunas para telas médias */
+    }
+
+    .deposit {
+        font-size: 14px;  /* Ajusta o tamanho da fonte */
+        width: 35px;
+        height: 35px;
+    }
+}
+
+@media (max-width: 480px) {
+    .deposits-container {
+        grid-template-columns: repeat(4, 1fr); /* 4 colunas para telas menores */
+    }
+
+    .deposit {
+        font-size: 12px;  /* Ajusta ainda mais para telas pequenas */
+        width: 30px;
+        height: 30px;
+    }
 }
