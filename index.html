@@ -1,82 +1,29 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <title>Desafio dos 100 Depósitos</title>
-  <style>
-    /* Estilos CSS */
-    button {
-      width: 50px;
-      height: 50px;
-      margin: 5px;
-      font-size: 18px;
-    }
-    .selected {
-      background-color: #4CAF50;
-      color: white;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio dos 100 Depósitos</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Desafio dos 100 Depósitos</h1>
-  <div id="botoes"></div>
-  <p>Soma total: <span id="total">0</span></p>
-
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-  <script>
-    // Inicializa o Firebase
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyDoF06G0K4C6DkiKBLdr7BECgOJW7vXmGA",
-  authDomain: "planejamento-f5fe7.firebaseapp.com",
-  projectId: "planejamento-f5fe7",
-  storageBucket: "planejamento-f5fe7.firebasestorage.app",
-  messagingSenderId: "207138969970",
-  appId: "1:207138969970:web:410110bef88c58fb76a5eb",
-  measurementId: "G-N4LLKSEBS2"
-};
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    // Cria os botões e adiciona ao DOM
-    const botoesContainer = document.getElementById('botoes');
-    let total = 0;
-    for (let i = 1; i <= 100; i++) {
-      const button = document.createElement('button');
-      button.textContent = i;
-      button.onclick = () => {
-        // Grava o valor no Firebase
-        database.ref('depositos').push(i);
-
-        // Adiciona a classe para mudar a cor e atualiza o total
-        button.classList.add('selected');
-        total += parseInt(button.textContent);
-        document.getElementById('total').textContent = total;
-      };
-      botoesContainer.appendChild(button);
-    }
-
-    // Lê os dados do Firebase e exibe (opcional, caso queira exibir todos os depósitos)
-    database.ref('depositos').on('value', (snapshot) => {
-      const data = snapshot.val();
-      console.log('Depósitos realizados:', data);
-    });
-
-    // Lê os dados do Firebase ao iniciar a página e atualiza a interface
-database.ref('depositos').on('value', (snapshot) => {
-  const data = snapshot.val();
-  if (data) {
-    let total = 0;
-    for (const deposito in data) {
-      total += data[deposito];
-    }
-    document.getElementById('total').textContent = total;
-  }
-});
+    <div class="container">
+        <h1>Desafio dos 100 Depósitos</h1>
+        <div id="buttons-container">
+            <!-- Botões de 1 a 100 -->
+            <button class="deposit-button" data-value="1">1</button>
+            <button class="deposit-button" data-value="2">2</button>
+            <button class="deposit-button" data-value="3">3</button>
+            <!-- ... até 100 -->
+            <button class="deposit-button" data-value="100">100</button>
+        </div>
+        <h2>Depósitos Realizados:</h2>
+        <ul id="deposit-list"></ul>
+    </div>
     
-  </script>
-</body>
-</html>
-  </script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
