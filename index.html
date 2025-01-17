@@ -61,6 +61,19 @@ const firebaseConfig = {
       const data = snapshot.val();
       console.log('Depósitos realizados:', data);
     });
+
+    // Lê os dados do Firebase ao iniciar a página e atualiza a interface
+database.ref('depositos').on('value', (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    let total = 0;
+    for (const deposito in data) {
+      total += data[deposito];
+    }
+    document.getElementById('total').textContent = total;
+  }
+});
+    
   </script>
 </body>
 </html>
