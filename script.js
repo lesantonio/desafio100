@@ -41,7 +41,7 @@ function criarDepositos() {
         const deposit = document.createElement('div');
         deposit.classList.add('deposit');
         deposit.textContent = i;
-        deposit.id = `deposito-${i}`;  // Atribui um id único ao número
+        deposit.id = `deposito-${i}`; // Atribui um id único ao número
         
         deposit.addEventListener('click', () => {
             if (deposit.classList.contains('clicked')) {
@@ -67,6 +67,28 @@ function atualizarTotal() {
     totalElement.textContent = totalDepositado.toFixed(2);
 }
 
+// Função para resetar o estado
+function resetarDepositos() {
+    // Remove a classe 'clicked' de todos os depósitos
+    document.querySelectorAll('.deposit').forEach(deposit => {
+        deposit.classList.remove('clicked');
+    });
+
+    // Zera o total depositado
+    totalDepositado = 0;
+    atualizarTotal();
+
+    // Remove os dados do localStorage
+    localStorage.removeItem('depositos');
+}
+
 // Iniciar a criação dos depósitos e carregar dados salvos
 criarDepositos();
 carregarDados();
+
+// Adiciona o evento de clique ao botão Reset
+const resetBtn = document.createElement('button');
+resetBtn.id = 'reset-btn';
+resetBtn.textContent = 'Resetar';
+resetBtn.addEventListener('click', resetarDepositos);
+document.body.appendChild(resetBtn);
