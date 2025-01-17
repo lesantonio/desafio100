@@ -1,92 +1,112 @@
-let totalDepositado = 0;
+/* Estilo Geral */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background-color: #f7f7f7;
+}
 
-// Função para carregar dados salvos no localStorage
-function carregarDados() {
-    try {
-        const dados = JSON.parse(localStorage.getItem('depositos'));
-        if (dados && typeof dados.total === 'number' && Array.isArray(dados.numerosSelecionados)) {
-            totalDepositado = dados.total;
-            atualizarTotal();
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
 
-            // Marca os depósitos já clicados
-            dados.numerosSelecionados.forEach(num => {
-                const deposit = document.getElementById(`deposito-${num}`);
-                if (deposit) {
-                    deposit.classList.add('clicked');
-                }
-            });
-        }
-    } catch (e) {
-        console.error('Erro ao carregar dados do localStorage:', e);
+p span#total {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #4CAF50;
+}
+
+/* Contêiner de Depósitos */
+.deposits-container {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr); /* 10 colunas padrão */
+    gap: 5px; /* Reduz o espaço entre os botões */
+    padding: 10px;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+/* Estilo dos Depósitos */
+.deposit {
+    width: 50px; /* Aumenta o tamanho dos botões */
+    height: 50px; /* Aumenta o tamanho dos botões */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    font-size: 18px; /* Aumenta o tamanho do texto */
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+    border-radius: 5px; /* Bordas levemente arredondadas */
+}
+
+/* Depósitos clicados */
+.deposit.clicked {
+    background-color: #4CAF50;
+    color: white;
+    animation: pop 0.2s ease-out;
+}
+
+/* Hover para depósitos não clicados */
+.deposit:not(.clicked):hover {
+    background-color: #e0e0e0;
+    border-color: #ccc;
+}
+
+/* Animação ao clicar */
+@keyframes pop {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
     }
 }
 
-// Função para salvar os dados no localStorage
-function salvarDados() {
-    const numerosSelecionados = [];
-    document.querySelectorAll('.deposit.clicked').forEach(deposit => {
-        const numero = parseInt(deposit.textContent, 10);
-        numerosSelecionados.push(numero);
-    });
-
-    const dados = {
-        total: totalDepositado,
-        numerosSelecionados: numerosSelecionados
-    };
-
-    localStorage.setItem('depositos', JSON.stringify(dados));
+/* Botão de Reset */
+button#reset-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+    margin-top: 20px;
 }
 
-// Função para criar os depósitos na tela
-function criarDepositos() {
-    const container = document.querySelector('.deposits-container');
-    
-    for (let i = 1; i <= 100; i++) {
-        const deposit = document.createElement('div');
-        deposit.classList.add('deposit');
-        deposit.textContent = i;
-        deposit.id = `deposito-${i}`;
-        
-        deposit.addEventListener('click', () => {
-            if (deposit.classList.contains('clicked')) {
-                deposit.classList.remove('clicked');
-                totalDepositado -= i;
-            } else {
-                deposit.classList.add('clicked');
-                totalDepositado += i;
-            }
-            atualizarTotal();
-            salvarDados();
-        });
-        
-        container.appendChild(deposit);
+button#reset-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .deposits-container {
+        grid-template-columns: repeat(5, 1fr); /* 5 colunas para telas médias */
+    }
+
+    .deposit {
+        font-size: 16px;
+        width: 45px;
+        height: 45px;
     }
 }
 
-// Função para atualizar o valor total
-function atualizarTotal() {
-    const totalElement = document.getElementById('total');
-    totalElement.textContent = totalDepositado.toFixed(2);
+@media (max-width: 480px) {
+    .deposits-container {
+        grid-template-columns: repeat(4, 1fr); /* 4 colunas para telas menores */
+    }
 
-    // Adiciona uma classe de feedback visual ao total
-    totalElement.classList.add(totalDepositado >= 0 ? 'updated' : 'updated-negative');
-    setTimeout(() => {
-        totalElement.classList.remove('updated', 'updated-negative');
-    }, 300);
+    .deposit {
+        font-size: 14px;
+        width: 40px;
+        height: 40px;
+    }
 }
-
-// Botão de reset
-document.getElementById('reset-btn').addEventListener('click', () => {
-    localStorage.removeItem('depositos');
-    totalDepositado = 0;
-    atualizarTotal();
-
-    // Remove a classe 'clicked' de todos os depósitos
-    document.querySelectorAll('.deposit').forEach(deposit => {
-        deposit.classList.remove('clicked');
-    });
-});
-
-// Inicialização
-criarDepositos();
-carregarDados();
