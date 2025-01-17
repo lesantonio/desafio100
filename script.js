@@ -61,6 +61,7 @@ function displayDeposits() {
 
 // Função para criar os botões de 1 a 100
 function createButtons() {
+    console.log('Criando botões...'); // Log de depuração
     for (let i = 1; i <= 100; i++) {
         const button = document.createElement("button");
         button.classList.add("deposit-button");
@@ -77,6 +78,9 @@ function createButtons() {
     }
 }
 
-// Inicializa a exibição dos depósitos e os botões
-createButtons();
-displayDeposits();
+// Esperar o carregamento total da página
+document.addEventListener("DOMContentLoaded", function() {
+    console.log('Página carregada com sucesso!'); // Log de depuração
+    createButtons();
+    displayDeposits();
+});
