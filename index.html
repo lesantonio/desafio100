@@ -43,12 +43,11 @@
     <div class="total" id="total">Total: R$ 0</div>
 
     <script type="module">
-        // Importação da biblioteca do Supabase
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
         // Configuração do Supabase
         const supabaseUrl = 'https://iitxrcybizewpyzomheh.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpdHhyY3liaXpld3B5em9taGVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxMzQ2NTUsImV4cCI6MjA1MjcxMDY1NX0.tCviUtGfTvGq2HwRt3sC2mcK5B4hYTAjlirMEC_mPA8'; // Substitua pela chave pública anônima do Supabase
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpdHhyY3liaXpld3B5em9taGVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxMzQ2NTUsImV4cCI6MjA1MjcxMDY1NX0.tCviUtGfTvGq2HwRt3sC2mcK5B4hYTAjlirMEC_mPA8'; // Insira sua chave pública do Supabase
         const supabase = createClient(supabaseUrl, supabaseKey);
 
         const buttonsContainer = document.getElementById('buttons-container');
@@ -83,14 +82,15 @@
         function updateTotal() {
             const sum = selectedValues.reduce((acc, val) => acc + val, 0);
             totalElement.textContent = `Total: R$ ${sum}`;
-            saveData(sum); // Salvar no Supabase
+            saveData(sum);
         }
 
         // Salvar os dados no Supabase
         async function saveData(total) {
+            const userId = 'user_1'; // Identificador do usuário (substitua conforme necessário)
             const { data, error } = await supabase
                 .from('deposits')
-                .upsert([{ value: total }], { onConflict: ['value'] });
+                .upsert([{ user_id: userId, value: total }], { onConflict: ['user_id'] });
 
             if (error) {
                 console.error('Erro ao salvar no Supabase:', error);
@@ -101,15 +101,24 @@
 
         // Carregar dados salvos do Supabase
         async function loadData() {
+            const userId = 'user_1'; // Identificador do usuário (substitua conforme necessário)
             const { data, error } = await supabase
                 .from('deposits')
-                .select('value');
+                .select('value')
+                .eq('user_id', userId)
+                .single();
 
             if (error) {
                 console.error('Erro ao carregar dados:', error);
-            } else if (data && data.length > 0) {
-                selectedValues = data.map(item => item.value);
-                updateTotal();
+            } else if (data) {
+                const savedTotal = data.value;
+                totalElement.textContent = `Total: R$ ${savedTotal}`;
+                // Reconstruir os valores selecionados
+                selectedValues = Array.from({ length: 100 }, (_, i) => i + 1).filter(val => savedTotal >= val);
+                selectedValues.forEach(val => {
+                    const button = document.querySelector(`.button:nth-child(${val})`);
+                    if (button) button.classList.add('selected');
+                });
             }
         }
 
