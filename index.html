@@ -42,11 +42,14 @@
     <div class="buttons-container" id="buttons-container"></div>
     <div class="total" id="total">Total: R$ 0</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0-beta.7/dist/umd/supabase.js"></script>
-    <script>
-        const supabaseUrl = 'https://iitxrcybizewpyzomheh.supabase.co'; // Substitua pelo seu URL do Supabase
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpdHhyY3liaXpld3B5em9taGVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxMzQ2NTUsImV4cCI6MjA1MjcxMDY1NX0.tCviUtGfTvGq2HwRt3sC2mcK5B4hYTAjlirMEC_mPA8'; // Substitua pela chave anônima
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    <script type="module">
+        // Importação da biblioteca do Supabase
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        // Configuração do Supabase
+        const supabaseUrl = 'https://iitxrcybizewpyzomheh.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpdHhyY3liaXpld3B5em9taGVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxMzQ2NTUsImV4cCI6MjA1MjcxMDY1NX0.tCviUtGfTvGq2HwRt3sC2mcK5B4hYTAjlirMEC_mPA8'; // Substitua pela chave pública anônima do Supabase
+        const supabase = createClient(supabaseUrl, supabaseKey);
 
         const buttonsContainer = document.getElementById('buttons-container');
         const totalElement = document.getElementById('total');
@@ -91,6 +94,8 @@
 
             if (error) {
                 console.error('Erro ao salvar no Supabase:', error);
+            } else {
+                console.log('Dados salvos com sucesso:', data);
             }
         }
 
@@ -102,7 +107,7 @@
 
             if (error) {
                 console.error('Erro ao carregar dados:', error);
-            } else {
+            } else if (data && data.length > 0) {
                 selectedValues = data.map(item => item.value);
                 updateTotal();
             }
