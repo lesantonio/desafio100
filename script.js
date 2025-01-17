@@ -1,5 +1,5 @@
-// Importando e configurando o Firebase
-  const firebaseConfig = {
+// Configuração do Firebase
+const firebaseConfig = {
     apiKey: "AIzaSyDoF06G0K4C6DkiKBLdr7BECgOJW7vXmGA",
     authDomain: "planejamento-f5fe7.firebaseapp.com",
     projectId: "planejamento-f5fe7",
@@ -7,17 +7,18 @@
     messagingSenderId: "207138969970",
     appId: "1:207138969970:web:410110bef88c58fb76a5eb",
     measurementId: "G-N4LLKSEBS2"
-  };
+};
 
+// Inicializar Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const database = firebase.database(app);
 
 let totalDepositado = 0;
 
-// Função para carregar dados do Firebase
+// Função para recuperar dados salvos do Firebase
 function carregarDados() {
-    const ref = database.ref('depositos');
-    ref.once('value').then((snapshot) => {
+    const depositosRef = database.ref('depositos');
+    depositosRef.once('value', (snapshot) => {
         const dados = snapshot.val();
         if (dados) {
             totalDepositado = dados.total;
@@ -34,7 +35,7 @@ function carregarDados() {
     });
 }
 
-// Função para salvar dados no Firebase
+// Função para salvar os dados no Firebase
 function salvarDados() {
     const numerosSelecionados = [];
     document.querySelectorAll('.deposit.clicked').forEach(deposit => {
@@ -47,8 +48,8 @@ function salvarDados() {
         numerosSelecionados: numerosSelecionados
     };
 
-    // Salva os dados no Firebase
-    database.ref('depositos').set(dados);
+    const depositosRef = database.ref('depositos');
+    depositosRef.set(dados); // Salva os dados no Firebase
 }
 
 // Função para criar os depósitos na tela
@@ -72,7 +73,7 @@ function criarDepositos() {
                 totalDepositado += i;
             }
             atualizarTotal();
-            salvarDados(); // Salva os dados no Firebase sempre que um número é clicado
+            salvarDados(); // Salva os dados sempre que um número é clicado
         });
         
         container.appendChild(deposit);
@@ -85,31 +86,20 @@ function atualizarTotal() {
     totalElement.textContent = totalDepositado.toFixed(2);
 }
 
-// Função para resetar os depósitos e dados no Firebase
+// Função para resetar os depósitos
 function resetarDepositos() {
-    // Remove a classe 'clicked' de todos os depósitos
+    totalDepositado = 0;
+    atualizarTotal();
+    // Remover as classes "clicked" de todos os depósitos
     document.querySelectorAll('.deposit').forEach(deposit => {
         deposit.classList.remove('clicked');
     });
-
-    // Zera o total depositado
-    totalDepositado = 0;
-    atualizarTotal();
-
-    // Reseta os dados no Firebase
-    database.ref('depositos').set({
-        total: 0,
-        numerosSelecionados: []
-    });
+    salvarDados(); // Salva a alteração no Firebase
 }
 
-// Iniciar a criação dos depósitos e carregar dados do Firebase
+// Criar os depósitos e carregar os dados do Firebase
 criarDepositos();
 carregarDados();
 
-// Adiciona o evento de clique ao botão Reset
-const resetBtn = document.createElement('button');
-resetBtn.id = 'reset-btn';
-resetBtn.textContent = 'Resetar';
-resetBtn.addEventListener('click', resetarDepositos);
-document.body.appendChild(resetBtn);
+// Adicionar evento para o botão de reset
+document.getElementById('resetButton').addEventListener('click', resetarDepositos);
