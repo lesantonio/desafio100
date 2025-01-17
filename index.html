@@ -19,7 +19,7 @@
     <script type="module">
         // Importar as funções necessárias do SDK do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
         // Configuração do Firebase
         const firebaseConfig = {
@@ -46,8 +46,9 @@
 
         // Função para salvar o depósito no Firebase
         function saveDeposit(depositValue) {
-            const depositRef = ref(database, "deposits");
-            push(depositRef, depositValue);
+            const depositRef = ref(database, "deposits/");
+            const newDepositRef = push(depositRef);
+            set(newDepositRef, depositValue);
 
             // Atualiza a soma total
             totalSum += depositValue;
@@ -61,8 +62,8 @@
 
         // Função para exibir os depósitos salvos
         function displayDeposits() {
-            const depositRef = ref(database, "deposits");
-            onValue(depositRef, function(snapshot) {
+            const depositRef = ref(database, "deposits/");
+            onValue(depositRef, (snapshot) => {
                 const deposits = snapshot.val();
                 depositList.innerHTML = "";
                 totalSum = 0;  // Reseta a soma antes de recalcular
