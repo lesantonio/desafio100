@@ -67,11 +67,12 @@
                 depositList.innerHTML = "";
                 totalSum = 0;  // Reseta a soma antes de recalcular
 
+                // Exibe cada depósito recuperado do Firebase
                 for (let id in deposits) {
                     const deposit = deposits[id];
                     totalSum += deposit;
 
-                    // Exibe cada depósito
+                    // Exibe o depósito na lista
                     const listItem = document.createElement("li");
                     listItem.textContent = `Depósito: R$${deposit}`;
                     depositList.appendChild(listItem);
@@ -102,8 +103,8 @@
 
         // Esperar o carregamento total da página
         document.addEventListener("DOMContentLoaded", function() {
-            createButtons();
-            displayDeposits();
+            createButtons();      // Cria os botões de 1 a 100
+            displayDeposits();    // Exibe os depósitos salvos do Firebase
         });
     </script>
 </body>
