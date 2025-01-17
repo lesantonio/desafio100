@@ -58,6 +58,9 @@ function salvarDados() {
 function criarDepositos() {
     const container = document.querySelector('.deposits-container');
     
+    // Limpar o container antes de adicionar os depósitos
+    container.innerHTML = ''; 
+
     for (let i = 1; i <= 100; i++) {
         const deposit = document.createElement('div');
         deposit.classList.add('deposit');
