@@ -20,8 +20,8 @@ p span#total {
 /* Contêiner de Depósitos */
 .deposits-container {
     display: grid;
-    grid-template-columns: repeat(10, 1fr); /* 10 colunas padrão */
-    gap: 5px; /* Reduz o espaço entre os botões */
+    grid-template-columns: repeat(5, 1fr); /* Sempre 5 colunas */
+    gap: 3px; /* Reduzido o espaço entre os botões */
     padding: 10px;
     margin-top: 30px;
     margin-bottom: 20px;
@@ -29,18 +29,18 @@ p span#total {
 
 /* Estilo dos Depósitos */
 .deposit {
-    width: 50px; /* Aumenta o tamanho dos botões */
-    height: 50px; /* Aumenta o tamanho dos botões */
+    width: 60px; /* Botões maiores */
+    height: 60px; /* Botões maiores */
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #f0f0f0;
     border: 2px solid #ddd;
     cursor: pointer;
-    font-size: 18px; /* Aumenta o tamanho do texto */
+    font-size: 20px; /* Texto maior */
     font-weight: bold;
     transition: background-color 0.3s, transform 0.2s;
-    border-radius: 5px; /* Bordas levemente arredondadas */
+    border-radius: 4px; /* Bordas levemente arredondadas */
 }
 
 /* Depósitos clicados */
@@ -88,25 +88,17 @@ button#reset-btn:hover {
 
 /* Responsividade */
 @media (max-width: 768px) {
-    .deposits-container {
-        grid-template-columns: repeat(5, 1fr); /* 5 colunas para telas médias */
-    }
-
     .deposit {
-        font-size: 16px;
-        width: 45px;
-        height: 45px;
+        font-size: 18px;
+        width: 55px;
+        height: 55px;
     }
 }
 
 @media (max-width: 480px) {
-    .deposits-container {
-        grid-template-columns: repeat(5, 1fr); /* 4 colunas para telas menores */
-    }
-
     .deposit {
-        font-size: 14px;
-        width: 40px;
-        height: 40px;
+        font-size: 16px;
+        width: 50px;
+        height: 50px;
     }
 }
