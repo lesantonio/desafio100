@@ -101,7 +101,7 @@ button#reset-btn:hover {
 
 @media (max-width: 480px) {
     .deposits-container {
-        grid-template-columns: repeat(4, 1fr); /* 4 colunas para telas menores */
+        grid-template-columns: repeat(5, 1fr); /* 4 colunas para telas menores */
     }
 
     .deposit {
