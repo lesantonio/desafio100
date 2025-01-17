@@ -25,12 +25,14 @@ function carregarDados() {
             atualizarTotal();
 
             // Marca os depósitos já feitos
-            dados.numerosSelecionados.forEach(num => {
-                const deposit = document.getElementById(`deposito-${num}`);
-                if (deposit) {
-                    deposit.classList.add('clicked');
-                }
-            });
+            if (dados.numerosSelecionados) {
+                dados.numerosSelecionados.forEach(num => {
+                    const deposit = document.getElementById(`deposito-${num}`);
+                    if (deposit) {
+                        deposit.classList.add('clicked');
+                    }
+                });
+            }
         }
     });
 }
