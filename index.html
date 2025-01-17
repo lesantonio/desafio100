@@ -13,30 +13,98 @@
         <h2>Somatória dos Depósitos: <span id="total-sum">R$0</span></h2>
         <h2>Depósitos Realizados:</h2>
         <ul id="deposit-list"></ul>
-    </div>  
-</body>
+    </div>
 
+    <!-- Carregar o Firebase e o SDK -->
     <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+        // Importar as funções necessárias do SDK do Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/11.2.0/firebase-database.js";
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDoF06G0K4C6DkiKBLdr7BECgOJW7vXmGA",
-    authDomain: "planejamento-f5fe7.firebaseapp.com",
-    projectId: "planejamento-f5fe7",
-    storageBucket: "planejamento-f5fe7.firebasestorage.app",
-    messagingSenderId: "207138969970",
-    appId: "1:207138969970:web:410110bef88c58fb76a5eb",
-    measurementId: "G-N4LLKSEBS2"
-  };
+        // Configuração do Firebase
+        const firebaseConfig = {
+          apiKey: "AIzaSyDoF06G0K4C6DkiKBLdr7BECgOJW7vXmGA",
+          authDomain: "planejamento-f5fe7.firebaseapp.com",
+          projectId: "planejamento-f5fe7",
+          storageBucket: "planejamento-f5fe7.firebasestorage.app",
+          messagingSenderId: "207138969970",
+          appId: "1:207138969970:web:410110bef88c58fb76a5eb",
+          measurementId: "G-N4LLKSEBS2"
+        };
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Referência ao contêiner de botões e à lista de depósitos
+        const buttonsContainer = document.getElementById("buttons-container");
+        const depositList = document.getElementById("deposit-list");
+        const totalSumElement = document.getElementById("total-sum");
+
+        // Variáveis para controlar a soma dos depósitos
+        let totalSum = 0;
+
+        // Função para salvar o depósito no Firebase
+        function saveDeposit(depositValue) {
+            const depositRef = ref(database, "deposits");
+            push(depositRef, depositValue);
+
+            // Atualiza a soma total
+            totalSum += depositValue;
+            totalSumElement.textContent = `R$${totalSum}`;
+
+            // Exibe o novo depósito na lista
+            const listItem = document.createElement("li");
+            listItem.textContent = `Depósito: R$${depositValue}`;
+            depositList.appendChild(listItem);
+        }
+
+        // Função para exibir os depósitos salvos
+        function displayDeposits() {
+            const depositRef = ref(database, "deposits");
+            onValue(depositRef, function(snapshot) {
+                const deposits = snapshot.val();
+                depositList.innerHTML = "";
+                totalSum = 0;  // Reseta a soma antes de recalcular
+
+                for (let id in deposits) {
+                    const deposit = deposits[id];
+                    totalSum += deposit;
+
+                    // Exibe cada depósito
+                    const listItem = document.createElement("li");
+                    listItem.textContent = `Depósito: R$${deposit}`;
+                    depositList.appendChild(listItem);
+                }
+
+                // Atualiza a somatória dos depósitos
+                totalSumElement.textContent = `R$${totalSum}`;
+            });
+        }
+
+        // Função para criar os botões de 1 a 100
+        function createButtons() {
+            for (let i = 1; i <= 100; i++) {
+                const button = document.createElement("button");
+                button.classList.add("deposit-button");
+                button.textContent = i;
+                button.dataset.value = i;
+
+                // Evento de clique para salvar o depósito e mudar a cor do botão
+                button.addEventListener("click", () => {
+                    button.classList.add("selected");  // Muda a cor do botão
+                    saveDeposit(i);
+                });
+
+                buttonsContainer.appendChild(button);
+            }
+        }
+
+        // Esperar o carregamento total da página
+        document.addEventListener("DOMContentLoaded", function() {
+            createButtons();
+            displayDeposits();
+        });
+    </script>
+</body>
 </html>
