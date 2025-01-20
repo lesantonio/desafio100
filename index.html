@@ -1,132 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Desafio dos 100 Depósitos</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    #buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    button {
-      width: 50px;
-      height: 50px;
-      font-size: 16px;
-      cursor: pointer;
-      border: 1px solid #ccc;
-      background-color: #f0f0f0;
-      border-radius: 5px;
-    }
-    button.selected {
-      background-color: #4CAF50;
-      color: white;
-    }
-    #total {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio dos 100 Depósitos</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
 </head>
 <body>
-  <h1>Desafio dos 100 Depósitos</h1>
-  <div id="buttons"></div>
-  <div id="total">Total: R$ 0</div>
+    <h1>Desafio dos 100 Depósitos</h1>
+    <div id="buttons-container"></div>
+    <script>
+        // Gera os 100 botões dinâmicamente
+        const container = document.getElementById('buttons-container');
 
-  <script type="module">
-    // Importar a biblioteca do Supabase
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+        for (let i = 1; i <= 100; i++) {
+            const button = document.createElement('button');
+            button.textContent = i;
+            button.classList.add('deposit-button');
+            button.addEventListener('click', () => handleButtonClick(i));
+            container.appendChild(button);
+        }
 
-    // Configurações do Supabase
-    const supabaseUrl = 'https://iitxrcybizewpyzomheh.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpdHhyY3liaXpld3B5em9taGVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzcxMzQ2NTUsImV4cCI6MjA1MjcxMDY1NX0.tCviUtGfTvGq2HwRt3sC2mcK5B4hYTAjlirMEC_mPA8'; // Substitua pela sua chave ANON
-    const supabase = createClient(supabaseUrl, supabaseKey);
+        // Função que é chamada ao clicar em um botão
+        async function handleButtonClick(value) {
+            try {
+                const response = await fetch('https://<TURSO_DB_URL>', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer <TURSO_DB_API_KEY>'
+                    },
+                    body: JSON.stringify({ value })
+                });
 
-    // Elementos da interface
-    const buttonsContainer = document.getElementById('buttons');
-    const totalElement = document.getElementById('total');
-
-    // Variáveis globais
-    let total = 0;
-    const selectedButtons = new Set();
-
-    // Função para carregar dados do Supabase
-    async function loadData() {
-      const userId = 'user_1'; // Identificador do usuário (fixo para testes)
-
-      const { data, error } = await supabase
-        .from('deposits')
-        .select('value')
-        .eq('user_id', userId)
-        .single();
-
-      if (error) {
-        console.error('Erro ao carregar dados:', error.message);
-        total = 0; // Se nenhum dado for encontrado, começa em 0
-      } else if (data) {
-        total = data.value;
-        console.log('Dados carregados:', total);
-      }
-
-      // Atualiza o total e os botões selecionados
-      totalElement.textContent = `Total: R$ ${total}`;
-    }
-
-    // Função para salvar dados no Supabase
-    async function saveData() {
-      const userId = 'user_1'; // Identificador do usuário
-
-      const { data, error } = await supabase
-        .from('deposits')
-        .upsert([{ user_id: userId, value: total }], { onConflict: ['user_id'] });
-
-      if (error) {
-        console.error('Erro ao salvar no Supabase:', error.message);
-      } else {
-        console.log('Dados salvos com sucesso:', data);
-      }
-    }
-
-    // Cria os botões de 1 a 100
-    function createButtons() {
-      for (let i = 1; i <= 100; i++) {
-        const button = document.createElement('button');
-        button.textContent = i;
-
-        button.addEventListener('click', () => {
-          const value = parseInt(button.textContent);
-
-          if (selectedButtons.has(value)) {
-            selectedButtons.delete(value);
-            total -= value;
-            button.classList.remove('selected');
-          } else {
-            selectedButtons.add(value);
-            total += value;
-            button.classList.add('selected');
-          }
-
-          totalElement.textContent = `Total: R$ ${total}`;
-          saveData(); // Salva o total sempre que um botão é clicado
-        });
-
-        buttonsContainer.appendChild(button);
-      }
-    }
-
-    // Inicializa o sistema
-    async function initialize() {
-      await loadData();
-      createButtons();
-    }
-
-    initialize();
-  </script>
+                if (response.ok) {
+                    alert(`Depósito ${value} registrado com sucesso!`);
+                } else {
+                    alert('Erro ao registrar o depósito.');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao conectar ao banco de dados.');
+            }
+        }
+    </script>
 </body>
 </html>
