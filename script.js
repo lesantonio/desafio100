@@ -22,12 +22,15 @@ const database = getDatabase(app);
 // Gera os 100 botões dinamicamente
 const container = document.getElementById('buttons-container');
 
-for (let i = 1; i <= 100; i++) {
-    const button = document.createElement('button');
-    button.textContent = i;
-    button.classList.add('deposit-button');
-    button.addEventListener('click', () => handleButtonClick(i));
-    container.appendChild(button);
+// Certifique-se de que o container esteja disponível
+if (container) {
+    for (let i = 1; i <= 100; i++) {
+        const button = document.createElement('button');
+        button.textContent = i;
+        button.classList.add('deposit-button');
+        button.addEventListener('click', () => handleButtonClick(i));
+        container.appendChild(button);
+    }
 }
 
 // Função que é chamada ao clicar em um botão
