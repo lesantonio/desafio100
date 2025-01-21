@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>100 Deposits</title>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // Configure o Supabase com a URL e chave anônima do seu projeto
+    const SUPABASE_URL = "https://zkhekgjzfyhvmsnzjooi.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpraGVrZ2p6Znlodm1zbnpqb29pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc0ODUyODIsImV4cCI6MjA1MzA2MTI4Mn0.0kEx7sYVFm7lNkTwpfm_kuGgDR1soh4u43sEPJE2PFM";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      const buttonsContainer = document.getElementById("buttons-container");
+      const totalDisplay = document.getElementById("total");
+      let total = 0;
+      const selectedButtons = new Set();
+
+      // Carregar botões salvos do Supabase
+      async function loadSelectedButtons() {
+        try {
+          const { data, error } = await supabase.from("deposits").select("button_id");
+          if (error) throw error;
+
+          data.forEach(({ button_id }) => {
+            selectedButtons.add(button_id);
+          });
+        } catch (error) {
+          console.error("Erro ao carregar os botões salvos:", error.message);
+        }
+      }
+
+      // Salvar botão selecionado no Supabase
+      async function saveButton(buttonId) {
+        try {
+          const { error } = await supabase.from("deposits").insert([{ button_id: buttonId }]);
+          if (error) throw error;
+        } catch (error) {
+          console.error("Erro ao salvar botão:", error.message);
+        }
+      }
+
+      // Remover botão desmarcado do Supabase
+      async function deleteButton(buttonId) {
+        try {
+          const { error } = await supabase.from("deposits").delete().eq("button_id", buttonId);
+          if (error) throw error;
+        } catch (error) {
+          console.error("Erro ao remover botão:", error.message);
+        }
+      }
+
+      // Inicializa a página
+      async function init() {
+        await loadSelectedButtons();
+
+        // Gera os botões de 1 a 100
+        for (let i = 1; i <= 100; i++) {
+          const button = document.createElement("button");
+          button.textContent = `$${i}`;
+          button.classList.add(selectedButtons.has(i) ? "selected" : "unselected");
+          button.dataset.value = i;
+
+          // Atualiza total e estado do botão ao clicar
+          button.addEventListener("click", async () => {
+            const value = parseInt(button.dataset.value, 10);
+
+            if (selectedButtons.has(i)) {
+              selectedButtons.delete(i);
+              total -= value;
+              button.classList.remove("selected");
+              button.classList.add("unselected");
+              await deleteButton(i); // Remove do Supabase
+            } else {
+              selectedButtons.add(i);
+              total += value;
+              button.classList.remove("unselected");
+              button.classList.add("selected");
+              await saveButton(i); // Salva no Supabase
+            }
+
+            totalDisplay.textContent = `$${total}`;
+          });
+
+          // Adiciona o botão ao contêiner
+          buttonsContainer.appendChild(button);
+
+          // Atualiza o total inicial se o botão já estava selecionado
+          if (selectedButtons.has(i)) {
+            total += i;
+          }
+        }
+
+        totalDisplay.textContent = `$${total}`;
+      }
+
+      await init();
+    });
+  </script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #buttons-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .unselected {
+      background-color: #ccc;
+    }
+    .selected {
+      background-color: #4caf50;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <h1>100 Deposits</h1>
+  <p>Total: <span id="total">$0</span></p>
+  <div id="buttons-container"></div>
+</body>
+</html>
